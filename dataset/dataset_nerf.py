@@ -81,7 +81,7 @@ class DatasetNERF(Dataset):
         fovy     = util.fovx_to_fovy(self.cfg['camera_angle_x'], self.aspect)
 
         if self.FLAGS.pre_load:
-            img, mv, mvp, campos = self.preloaded_data[self.indices[itr % self.n_images]]
+            img, mv, mvp, campos = self.preloaded_data[itr % self.n_images]
         else:
             img, mv, mvp, campos = self._parse_frame(self.cfg, self.indices[itr % self.n_images])
 

@@ -568,6 +568,11 @@ if __name__ == "__main__":
             dataset_validate = DatasetLLFF(FLAGS.ref_mesh, FLAGS)
         elif os.path.isfile(os.path.join(FLAGS.ref_mesh, 'transforms_train.json')):
             dataset_train    = DatasetNERF(os.path.join(FLAGS.ref_mesh, 'transforms_train.json'), FLAGS, examples=(FLAGS.iter+1)*FLAGS.batch)
+            ###
+            np.random.seed(0)
+            indices=np.random.choice(np.arange(len(dataset_train)), size=8, replace=False)
+            dataset_train    = torch.utils.data.Subset(dataset_train,indices)
+            ###
             dataset_validate = DatasetNERF(os.path.join(FLAGS.ref_mesh, 'transforms_test.json'), FLAGS)
 
     # ==============================================================================================

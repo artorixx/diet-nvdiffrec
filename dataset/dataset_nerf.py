@@ -34,16 +34,16 @@ def _load_img(path):
     return img
 
 class DatasetNERF(Dataset):
-    def __init__(self, cfg_path, FLAGS, maxlen=8, seed=0, examples=None):
+    def __init__(self, cfg_path, FLAGS, maxlen=None, seed=0, examples=None):
         self.FLAGS = FLAGS
         self.examples = examples
         self.base_dir = os.path.dirname(cfg_path)
 
         # Load config / transforms
         self.cfg = json.load(open(cfg_path, 'r'))
-        self.n_images = maxlen
+        self.n_images = maxlen if maxlen is not None else len(self.cfg['frames'])
         np.random.seed(seed)
-        self.indices=np.random.choice(np.arange(len(self.cfg['frames'])), size=maxlen, replace=False)
+        self.indices=np.random.choice(np.arange(len(self.cfg['frames'])), size=maxlen, replace=False) if maxlen is not None else np.arange(len(self.cfg['frames']))
         # Determine resolution & aspect ratio
         self.resolution = _load_img(os.path.join(self.base_dir, self.cfg['frames'][0]['file_path'])).shape[0:2]
         self.aspect = self.resolution[1] / self.resolution[0]

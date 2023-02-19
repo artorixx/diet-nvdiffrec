@@ -34,15 +34,16 @@ def _load_img(path):
     return img
 
 class DatasetNERF(Dataset):
-    def __init__(self, cfg_path, FLAGS, examples=None):
+    def __init__(self, cfg_path, FLAGS, maxlen=8, seed=0, examples=None):
         self.FLAGS = FLAGS
         self.examples = examples
         self.base_dir = os.path.dirname(cfg_path)
 
         # Load config / transforms
         self.cfg = json.load(open(cfg_path, 'r'))
-        self.n_images = len(self.cfg['frames'])
-
+        self.n_images = maxlen
+        np.random.seed(seed)
+        self.indices=np.random.choice(np.arange(len(self.cfg['frames'])), size=maxlen, replace=False)
         # Determine resolution & aspect ratio
         self.resolution = _load_img(os.path.join(self.base_dir, self.cfg['frames'][0]['file_path'])).shape[0:2]
         self.aspect = self.resolution[1] / self.resolution[0]
@@ -53,8 +54,8 @@ class DatasetNERF(Dataset):
         # Pre-load from disc to avoid slow png parsing
         if self.FLAGS.pre_load:
             self.preloaded_data = []
-            for i in range(self.n_images):
-                self.preloaded_data += [self._parse_frame(self.cfg, i)]
+            for idx in self.indices:
+                self.preloaded_data += [self._parse_frame(self.cfg, idx)]
 
     def _parse_frame(self, cfg, idx):
         # Config projection matrix (static, so could be precomputed)
@@ -80,9 +81,9 @@ class DatasetNERF(Dataset):
         fovy     = util.fovx_to_fovy(self.cfg['camera_angle_x'], self.aspect)
 
         if self.FLAGS.pre_load:
-            img, mv, mvp, campos = self.preloaded_data[itr % self.n_images]
+            img, mv, mvp, campos = self.preloaded_data[self.indices[itr % self.n_images]]
         else:
-            img, mv, mvp, campos = self._parse_frame(self.cfg, itr % self.n_images)
+            img, mv, mvp, campos = self._parse_frame(self.cfg, self.indices[itr % self.n_images])
 
         return {
             'mv' : mv,

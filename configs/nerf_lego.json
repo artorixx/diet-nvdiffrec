@@ -1,5 +1,5 @@
 {
-    "ref_mesh": "data/nerf_synthetic/lego",
+    "ref_mesh": "/drive/MyDrive/data/nerf/lego",
     "random_textures": true,
     "iter": 100,
     "save_interval": 100,

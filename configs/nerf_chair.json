@@ -1,5 +1,5 @@
 {
-    "ref_mesh": "data/nerf_synthetic/chair",
+    "ref_mesh": "/content/drive/MyDrive/data/nerf/chair",
     "random_textures": true,
     "iter": 5000,
     "save_interval": 100,
